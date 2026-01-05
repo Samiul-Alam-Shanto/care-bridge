@@ -1,8 +1,9 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-// 1. Import NextJsTopLoader and SessionProvider
 import NextTopLoader from "nextjs-toploader";
-import AuthProvider from "@/components/providers/AuthProvider";
+import AppProviders from "@/components/providers/AppProviders";
+import Navbar from "@/components/shared/Navbar";
+import Footer from "@/components/shared/Footer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -17,13 +18,17 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} antialiased`}>
-        {/* Global Loader at top of page */}
         <NextTopLoader color="#059669" showSpinner={false} />
 
-        {/* Wrap app in Auth Provider */}
-        <AuthProvider>{children}</AuthProvider>
+        <AppProviders>
+          <div className="flex min-h-screen flex-col">
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </div>
+        </AppProviders>
       </body>
     </html>
   );
