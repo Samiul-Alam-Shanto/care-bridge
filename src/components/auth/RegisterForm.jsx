@@ -29,24 +29,14 @@ export default function RegisterForm() {
       toast.dismiss("upload");
 
       // 2. API Call
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: data.name,
-          email: data.email,
-          phone: data.phone,
-          nid: data.nid,
-          password: data.password,
-          image: imageUrl,
-        }),
+      const { data } = await axiosPublic.post("/auth/register", {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        nid: data.nid,
+        password: data.password,
+        image: imageUrl,
       });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "Registration failed");
-      }
 
       // 3. Success
       toast.success("Account created successfully!");

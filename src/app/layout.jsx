@@ -2,8 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import NextTopLoader from "nextjs-toploader";
 import AppProviders from "@/components/providers/AppProviders";
-import Navbar from "@/components/shared/Navbar";
-import Footer from "@/components/shared/Footer";
+import ClientShell from "@/components/layout/ClientShell"; // Import the Shell
 
 const inter = Inter({
   subsets: ["latin"],
@@ -24,9 +23,10 @@ export default function RootLayout({ children }) {
 
         <AppProviders>
           <div className="flex min-h-screen flex-col">
-            <Navbar />
-            <main className="flex-1">{children}</main>
-            <Footer />
+            {/* The Shell handles the Navbar/Footer logic */}
+            <ClientShell>
+              <main className="flex-1">{children}</main>
+            </ClientShell>
           </div>
         </AppProviders>
       </body>
