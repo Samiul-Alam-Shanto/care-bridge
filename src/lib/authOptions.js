@@ -72,7 +72,7 @@ export const authOptions = {
      * signIn: Triggered when user logs in.
      * use this to MANUALLY save Google Users to MongoDB.
      */
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account }) {
       if (account.provider === "google") {
         const client = await clientPromise;
         const db = client.db("care-bridge");
@@ -101,14 +101,13 @@ export const authOptions = {
      * jwt: Triggered whenever a JSON Web Token is created/updated.
      * We add custom fields (id, role) here so they are available in the session.
      */
-    async jwt({ token, user }) {
-      // If user logs in (first time), populate token
+    async jwt({ token, user, trigger, session }) {
+      // 1. Initial Login
       if (user) {
         token.id = user.id;
         token.role = user.role || "user";
 
-        // If it's a Google login, we might need to fetch the role from DB
-        // because 'user' object from Google doesn't have  DB role yet
+        // Fetch role from DB for Google logins
         if (!user.role) {
           const client = await clientPromise;
           const db = client.db("care-bridge");
@@ -118,20 +117,27 @@ export const authOptions = {
           if (dbUser) {
             token.id = dbUser._id.toString();
             token.role = dbUser.role;
+            token.phone = dbUser.phone; // Add phone to token
           }
         }
       }
+
+      // 2. Handle Session Update (Triggered by client)
+      if (trigger === "update" && session) {
+        // Merge the new session data into the token
+        return { ...token, ...session.user };
+      }
+
       return token;
     },
 
-    /**
-     * session: Triggered when useSession() is called on client.
-     * We pass the token data to the client.
-     */
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id;
         session.user.role = token.role;
+        session.user.phone = token.phone;
+        if (token.name) session.user.name = token.name;
+        if (token.image) session.user.image = token.image;
       }
       return session;
     },

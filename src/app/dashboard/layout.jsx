@@ -1,5 +1,5 @@
 import Sidebar from "@/components/dashboard/Sidebar";
-import DashboardHeader from "@/components/dashboard/DashboardHeader"; // Import Header
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import { redirect } from "next/navigation";
@@ -11,17 +11,18 @@ export default async function DashboardLayout({ children }) {
     redirect("/login");
   }
 
+  // Fallback to "user" if role is missing
+  const role = session.user.role || "user";
+
   return (
     <div className="flex min-h-screen bg-stone-50 dark:bg-background">
-      {/* 1. Sidebar (Fixed Left) */}
-      <Sidebar />
+      {/* 1. Sidebar gets role for Desktop */}
+      <Sidebar role={role} />
 
-      {/* 2. Main Area */}
       <div className="flex flex-1 flex-col h-screen overflow-hidden">
-        {/* Dashboard Header (Sticky Top) */}
-        <DashboardHeader />
+        {/* 2. Header gets role for Mobile Menu */}
+        <DashboardHeader role={role} />
 
-        {/* Scrollable Content */}
         <main className="flex-1 overflow-y-auto p-4 md:p-8">{children}</main>
       </div>
     </div>

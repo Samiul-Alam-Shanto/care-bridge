@@ -2,23 +2,27 @@
 
 import { useState } from "react";
 import { useTheme } from "next-themes";
-import { Sun, Moon, Home, LogOut, Menu, X } from "lucide-react"; // Added Menu, X
+import { Sun, Moon, Home, LogOut, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
-import { dashboardLinks } from "./Sidebar"; // Import links to avoid duplication
-import { usePathname } from "next/navigation"; // To highlight active link in mobile
+import { usePathname } from "next/navigation";
+import { menus } from "./Sidebar"; // Import the menus object
 
-export default function DashboardHeader() {
+export default function DashboardHeader({ role = "user" }) {
+  // Accept role prop
   const { theme, setTheme } = useTheme();
   const { data: session } = useSession();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
+  // Get links based on role
+  const links = menus[role] || menus.user;
+
   return (
     <>
       <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-card px-4 md:px-6 shadow-sm">
-        {/* Left: Mobile Menu Trigger & Branding */}
+        {/* Left: Mobile Menu Trigger */}
         <div className="flex items-center gap-4">
           <button
             onClick={() => setIsMobileMenuOpen(true)}
@@ -27,7 +31,6 @@ export default function DashboardHeader() {
             <Menu className="h-6 w-6" />
           </button>
 
-          {/* Show Logo only on Mobile (Desktop has it in Sidebar) */}
           <Link
             href="/"
             className="lg:hidden flex items-center gap-2 font-bold text-primary"
@@ -38,7 +41,6 @@ export default function DashboardHeader() {
             <span>CareBridge</span>
           </Link>
 
-          {/* Breadcrumb / Title (Desktop) */}
           <h1 className="hidden lg:block text-lg font-semibold text-foreground capitalize">
             {pathname.split("/").pop().replace("-", " ") || "Overview"}
           </h1>
@@ -95,16 +97,14 @@ export default function DashboardHeader() {
         </div>
       </header>
 
-      {/* MOBILE MENU DRAWER (Overlay) */}
+      {/* MOBILE MENU DRAWER */}
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          {/* Backdrop */}
           <div
             className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
             onClick={() => setIsMobileMenuOpen(false)}
           />
 
-          {/* Sidebar Panel */}
           <div className="fixed inset-y-0 left-0 w-64 bg-card p-6 shadow-2xl border-r border-border animate-in slide-in-from-left duration-300">
             <div className="flex items-center justify-between mb-8">
               <span className="font-bold text-xl text-primary">Menu</span>
@@ -116,8 +116,14 @@ export default function DashboardHeader() {
               </button>
             </div>
 
+            <div className="mb-4">
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider border border-border rounded-full px-2 py-0.5">
+                {role.toUpperCase()}
+              </span>
+            </div>
+
             <nav className="space-y-2">
-              {dashboardLinks.map((link) => {
+              {links.map((link) => {
                 const isActive = pathname === link.href;
                 return (
                   <Link
@@ -136,6 +142,16 @@ export default function DashboardHeader() {
                 );
               })}
             </nav>
+
+            <div className="absolute bottom-6 left-6 right-6">
+              <button
+                onClick={() => signOut({ callbackUrl: "/" })}
+                className="flex w-full items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-600 dark:bg-red-900/20 dark:border-red-900/50"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </button>
+            </div>
           </div>
         </div>
       )}

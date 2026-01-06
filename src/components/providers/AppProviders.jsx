@@ -4,6 +4,7 @@ import { SessionProvider } from "next-auth/react";
 import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "react-hot-toast"; // IMPORT THIS
 import ThemeProvider from "./ThemeProvider";
 
 const queryClient = new QueryClient();
@@ -14,7 +15,13 @@ export default function AppProviders({ children }) {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <CartProvider>
-            <WishlistProvider>{children}</WishlistProvider>
+            <WishlistProvider>
+              <Toaster
+                position="top-center"
+                toastOptions={{ duration: 3000 }}
+              />
+              {children}
+            </WishlistProvider>
           </CartProvider>
         </ThemeProvider>
       </QueryClientProvider>
