@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useTheme } from "next-themes";
+import { useCart } from "@/context/CartContext"; // IMPORTED CART CONTEXT
 import {
   Menu,
   X,
@@ -16,13 +17,12 @@ import {
   LayoutDashboard,
   ShieldCheck,
   HelpCircle,
-  FileText,
   Briefcase,
   Mail,
   Newspaper,
   Users,
-  MapPin,
   Lightbulb,
+  ShoppingBag, // IMPORTED ICON
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
@@ -30,6 +30,8 @@ import Image from "next/image";
 export default function Navbar() {
   const { data: session } = useSession();
   const { theme, setTheme } = useTheme();
+  const { cart } = useCart(); // GET CART STATE
+
   const [isOpen, setIsOpen] = useState(false); // Mobile menu
   const [scrolled, setScrolled] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -82,11 +84,12 @@ export default function Navbar() {
         { name: "Contact", href: "/contact", icon: Mail },
       ],
     },
+    { name: "Professionals", href: "/caregivers", type: "link" },
   ];
 
   return (
     <header
-      className={`fixed top-0 z-50 w-full transition-all  duration-300 ${
+      className={`fixed top-0 z-50 w-full transition-all duration-300 ${
         scrolled
           ? "border-b border-border/50 bg-background/80 backdrop-blur-md shadow-sm"
           : "bg-background"
@@ -175,6 +178,20 @@ export default function Navbar() {
 
         {/* RIGHT SIDE ACTIONS */}
         <div className="hidden md:flex items-center gap-4">
+          {/* --- CART ICON (DESKTOP) --- */}
+          <Link
+            href="/cart"
+            className="relative p-2 text-muted-foreground hover:text-primary transition-colors"
+          >
+            <ShoppingBag className="h-6 w-6" />
+            {cart.length > 0 && (
+              <span className="absolute top-0 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-background">
+                {cart.length}
+              </span>
+            )}
+          </Link>
+
+          {/* Theme Toggle */}
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             className="rounded-full p-2 text-muted-foreground hover:bg-muted transition-colors"
@@ -259,12 +276,31 @@ export default function Navbar() {
         </div>
 
         {/* MOBILE MENU TOGGLE */}
-        <button
-          className="md:hidden p-2 text-foreground"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+        <div className="flex items-center gap-4 md:hidden">
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground hover:bg-stone-100 hover:text-primary dark:hover:bg-stone-800 transition-colors"
+          >
+            <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          </button>
+          {/* --- CART ICON (MOBILE) --- */}
+          <Link href="/cart" className="relative p-2 text-foreground">
+            <ShoppingBag className="h-6 w-6" />
+            {cart.length > 0 && (
+              <span className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                {cart.length}
+              </span>
+            )}
+          </Link>
+
+          <button
+            className="p-2 text-foreground"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
       </div>
 
       {/* MOBILE MENU CONTENT */}

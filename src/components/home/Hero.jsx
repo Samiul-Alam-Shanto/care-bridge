@@ -11,6 +11,7 @@ import "swiper/css/effect-fade";
 import { Search, MapPin, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const slides = [
   {
@@ -38,16 +39,21 @@ const slides = [
 ];
 
 export default function Hero() {
+  const router = useRouter();
   const [location, setLocation] = useState("");
   const [service, setService] = useState("");
   const [startDate, setStartDate] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const params = new URLSearchParams();
+    if (service) params.set("category", service);
+    router.push(`/services?${params.toString()}`);
   };
 
   return (
-    <section className="relative mt-16 h-screen min-h-150 w-full overflow-hidden bg-stone-900">
+    <section className="relative mt-16 h-[80vh] min-h-150 w-full overflow-hidden bg-stone-900">
       {/* SLIDER BACKGROUND */}
       <div className="absolute inset-0 h-full w-full">
         <Swiper

@@ -1,58 +1,32 @@
 "use client";
+
+import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
-import { Star, MapPin } from "lucide-react";
+import { Star, MapPin, ArrowRight } from "lucide-react";
 import Link from "next/link";
-
-const caregivers = [
-  {
-    id: 1,
-    name: "Sarah Ahmed",
-    role: "Elderly Care Specialist",
-    rating: 4.9,
-    reviews: 124,
-    location: "Dhaka, Uttara",
-    image:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400",
-  },
-  {
-    id: 2,
-    name: "Rahim Uddin",
-    role: "Patient Support (Male)",
-    rating: 5.0,
-    reviews: 89,
-    location: "Chattogram, Nasirabad",
-    image:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=400",
-  },
-  {
-    id: 3,
-    name: "Fatima Begum",
-    role: "Certified Babysitter",
-    rating: 4.8,
-    reviews: 210,
-    location: "Sylhet, Zindabazar",
-    image:
-      "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=400",
-  },
-  {
-    id: 4,
-    name: "Dr. Anisul Haque",
-    role: "Physiotherapy Expert",
-    rating: 4.9,
-    reviews: 56,
-    location: "Dhaka, Dhanmondi",
-    image:
-      "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=400",
-  },
-];
+import { axiosPublic } from "@/lib/axios";
+import Image from "next/image";
 
 export default function FeaturedCaregivers() {
+  const [caregivers, setCaregivers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch random featured caregivers
+    axiosPublic
+      .get("/caregivers?featured=true")
+      .then((res) => setCaregivers(res.data.caregivers))
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <section className="py-24 bg-background">
       <div className="container mx-auto px-4 md:px-8">
+        {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
           <div>
             <h2 className="text-3xl font-bold text-foreground">
@@ -63,59 +37,97 @@ export default function FeaturedCaregivers() {
             </p>
           </div>
           <Link
-            href="/search"
-            className="text-primary font-semibold hover:underline"
+            href="/caregivers"
+            className="group flex items-center gap-2 font-semibold text-primary hover:underline"
           >
-            View all caregivers
+            View all professionals{" "}
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
 
-        <Swiper
-          modules={[Autoplay, Pagination]}
-          spaceBetween={30}
-          slidesPerView={1}
-          breakpoints={{
-            640: { slidesPerView: 2 },
-            1024: { slidesPerView: 4 },
-          }}
-          autoplay={{ delay: 3000 }}
-          pagination={{ clickable: true }}
-          className="pb-12"
-        >
-          {caregivers.map((person) => (
-            <SwiperSlide key={person.id}>
-              <div className="group rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-lg">
-                <div className="relative mb-4 h-64 w-full overflow-hidden rounded-xl">
-                  <img
-                    src={person.image}
-                    alt={person.name}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute top-3 right-3 flex items-center gap-1 rounded-full bg-white/90 px-2 py-1 text-xs font-bold text-stone-900 backdrop-blur">
-                    <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                    {person.rating}
+        {/* Loading State */}
+        {loading && (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className="h-80 rounded-2xl bg-stone-100 dark:bg-stone-800 animate-pulse"
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Carousel */}
+        {!loading && (
+          <Swiper
+            modules={[Autoplay, Pagination]}
+            spaceBetween={30}
+            slidesPerView={1}
+            breakpoints={{
+              640: { slidesPerView: 2 },
+              1024: { slidesPerView: 4 },
+            }}
+            autoplay={{ delay: 3000 }}
+            pagination={{ clickable: true }}
+            className="pb-12"
+          >
+            {caregivers.map((person) => (
+              <SwiperSlide key={person._id}>
+                <Link
+                  href={`/caregivers/${person._id}`}
+                  className="group block h-full"
+                >
+                  <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm hover:shadow-xl transition-all">
+                    {/* Image */}
+                    <div className="relative h-64 w-full bg-stone-200">
+                      <Image
+                        src={person.image || "/placeholder.jpg"}
+                        alt={person.name}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <div className="absolute top-3 right-3 flex items-center gap-1 rounded-full bg-white/90 px-2 py-1 text-xs font-bold text-stone-900 backdrop-blur">
+                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                        {person.rating}
+                      </div>
+                    </div>
+
+                    {/* Details */}
+                    <div className="p-5">
+                      <h3 className="text-lg font-bold text-foreground truncate">
+                        {person.name}
+                      </h3>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {person.skills?.slice(0, 2).map((skill) => (
+                          <span
+                            key={skill}
+                            className="text-[10px] uppercase font-bold text-primary bg-primary/10 px-2 py-1 rounded"
+                          >
+                            {skill.replace("-", " ")}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground mt-4">
+                        <MapPin className="h-3 w-3" />
+                        {person.location?.district}, {person.location?.area}
+                      </div>
+
+                      <div className="mt-4 pt-4 border-t border-border flex justify-between items-center">
+                        <span className="font-bold text-foreground">
+                          ৳{person.hourly_rate}/hr
+                        </span>
+                        <span className="text-xs font-bold text-stone-500 group-hover:text-primary transition-colors">
+                          View Profile &rarr;
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-
-                <h3 className="text-lg font-bold text-foreground">
-                  {person.name}
-                </h3>
-                <p className="text-sm text-primary font-medium mb-2">
-                  {person.role}
-                </p>
-
-                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
-                  <MapPin className="h-3 w-3" />
-                  {person.location}
-                </div>
-
-                <button className="w-full rounded-lg bg-stone-100 py-2.5 text-sm font-bold text-stone-900 transition-colors hover:bg-primary hover:text-white dark:bg-stone-800 dark:text-stone-100">
-                  View Profile
-                </button>
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+                </Link>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        )}
       </div>
     </section>
   );
