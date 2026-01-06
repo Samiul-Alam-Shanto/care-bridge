@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { uploadToImgBB } from "@/lib/upload";
 import toast, { Toaster } from "react-hot-toast";
+import { axiosPublic } from "@/lib/axios";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -29,7 +30,7 @@ export default function RegisterForm() {
       toast.dismiss("upload");
 
       // 2. API Call
-      const { data } = await axiosPublic.post("/auth/register", {
+      const { data: result } = await axiosPublic.post("/auth/register", {
         name: data.name,
         email: data.email,
         phone: data.phone,
@@ -41,7 +42,7 @@ export default function RegisterForm() {
       // 3. Success
       toast.success("Account created successfully!");
       setTimeout(() => {
-        router.push("/login");
+        router.push("/dashboard");
       }, 1500);
     } catch (error) {
       console.error(error);
