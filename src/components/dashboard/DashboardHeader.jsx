@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { useTheme } from "next-themes";
-import { Sun, Moon, Home, LogOut, Menu, X } from "lucide-react";
+import { Sun, Moon, Home, LogOut, Menu, X, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { menus } from "./Sidebar"; // Import the menus object
+import { useCart } from "@/context/CartContext";
 
 export default function DashboardHeader({ role = "user" }) {
   // Accept role prop
@@ -15,6 +16,7 @@ export default function DashboardHeader({ role = "user" }) {
   const { data: session } = useSession();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { cart } = useCart(); // Get cart
 
   // Get links based on role
   const links = menus[role] || menus.user;
@@ -54,6 +56,17 @@ export default function DashboardHeader({ role = "user" }) {
             title="Go to Home"
           >
             <Home className="h-5 w-5" />
+          </Link>
+          <Link
+            href="/cart"
+            className="relative flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground hover:bg-stone-100 hover:text-primary dark:hover:bg-stone-800 transition-colors"
+          >
+            <ShoppingBag className="h-5 w-5" />
+            {cart.length > 0 && (
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-background">
+                {cart.length}
+              </span>
+            )}
           </Link>
 
           <button

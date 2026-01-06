@@ -18,12 +18,11 @@ export default function LoginForm() {
     formState: { errors },
   } = useForm();
 
-  // Handle Credentials Login
   const onSubmit = async (data) => {
     setLoading(true);
     try {
       const result = await signIn("credentials", {
-        redirect: false, // Don't redirect automatically, let us handle it
+        redirect: false,
         email: data.email,
         password: data.password,
       });
@@ -34,8 +33,8 @@ export default function LoginForm() {
 
       // Login Successful
       toast.success("Welcome back!");
-      router.refresh(); // Refresh to update server components
       router.push("/dashboard");
+      router.refresh();
     } catch (error) {
       toast.error(error.message);
     } finally {
@@ -45,7 +44,6 @@ export default function LoginForm() {
 
   // Handle Google Login
   const handleGoogleLogin = async () => {
-    // V4 Syntax
     await signIn("google", { callbackUrl: "/dashboard" });
   };
 
