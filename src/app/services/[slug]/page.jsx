@@ -4,49 +4,71 @@ import { CheckCircle2, AlertCircle } from "lucide-react";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-// Dynamic SEO Metadata
-// Dynamic SEO Metadata (Production Ready)
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const service = await getServiceBySlug(params.slug);
 
   if (!service) {
     return {
       title: "Service Not Found | CareBridge",
-      description: "The requested healthcare service does not exist.",
+      description: "The requested service could not be found.",
     };
   }
 
-  const url = `https://care-bridge-seven.vercel.app/services/${service.slug}`;
+  const baseUrl = "https://care-bridge-seven.vercel.app"; // Your Production URL
+  const pageUrl = `${baseUrl}/services/${service.slug}`;
+
+  // Create a clean snippet for SEO descriptions (Max 160 chars is standard)
+  const description =
+    service.description.length > 160
+      ? `${service.description.substring(0, 157)}...`
+      : service.description;
 
   return {
-    title: `${service.title} | CareBridge`,
-    description: service.description,
+    // 1. Browser Title
+    title: `${service.title} Services in Bangladesh | CareBridge`,
 
+    // 2. Search Engine Description
+    description: description,
+
+    // 3. Keywords (Good for older SEO)
+    keywords: [
+      service.title,
+      service.category,
+      "Caregiver Bangladesh",
+      "Home Care",
+      "CareBridge",
+    ],
+
+    // 4. Canonical URL (Important for Google)
+    alternates: {
+      canonical: pageUrl,
+    },
+
+    // 5. Open Graph (Facebook, WhatsApp, LinkedIn)
     openGraph: {
-      title: `${service.title} | CareBridge`,
-      description: service.description,
-      url,
+      title: `${service.title} - Trusted Care Professionals`,
+      description: description,
+      url: pageUrl,
       siteName: "CareBridge",
+      locale: "en_US",
+      type: "website",
       images: [
         {
-          url: service.image,
+          url: service.image, // Uses the service image from DB
           width: 1200,
           height: 630,
           alt: service.title,
         },
       ],
-      type: "article",
     },
 
+    // 6. Twitter Card (X)
     twitter: {
       card: "summary_large_image",
-      title: `${service.title} | CareBridge`,
-      description: service.description,
-      images: [service.image],
-    },
-
-    alternates: {
-      canonical: url,
+      title: `${service.title} | Verified Caregivers`,
+      description: description,
+      images: [service.image], // Uses the service image
     },
   };
 }

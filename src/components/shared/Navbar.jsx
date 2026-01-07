@@ -232,7 +232,7 @@ export default function Navbar() {
                     onClick={() => setUserDropdownOpen(false)}
                   />
                   <div className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-border bg-card p-2 shadow-lg z-20">
-                    <div className="px-2 py-1.5 text-sm text-muted-foreground border-b border-border mb-2">
+                    <div className="px-2 py-1.5  overflow-x-scroll text-sm text-muted-foreground border-b border-border mb-2">
                       {session.user?.email}
                     </div>
                     <Link
