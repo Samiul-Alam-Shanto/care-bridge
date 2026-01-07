@@ -29,10 +29,9 @@ export default function CheckoutPage() {
     }
 
     if (status === "authenticated") {
-      // Load booking from storage
       const data = localStorage.getItem("carebridge_checkout_item");
       if (!data) {
-        router.push("/services"); // No data? Go back to shopping
+        router.push("/services");
         return;
       }
       const parsed = JSON.parse(data);
@@ -41,16 +40,15 @@ export default function CheckoutPage() {
       });
 
       // Create Payment Intent on Server
-      fetch("/api/payment/create-intent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: parsed.totalCost,
+      axiosSecure
+        .post("/payment/create-intent", {
           bookingData: parsed,
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => setClientSecret(data.clientSecret));
+        })
+        .then(({ data }) => setClientSecret(data.clientSecret))
+        .catch((err) => {
+          console.error(err);
+          toast.error("Failed to initialize secure payment");
+        });
     }
   }, [status, router]);
 

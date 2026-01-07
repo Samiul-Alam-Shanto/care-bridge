@@ -6,18 +6,11 @@ import { Loader2, MapPin, Calendar, Check, X } from "lucide-react";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 export default function JobRequestsPage() {
   const { data: session } = useSession();
-  const router = useRouter();
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // Security Redirect if not caregiver
-  if (session && session.user.role !== "caregiver") {
-    router.push("/dashboard");
-  }
 
   const fetchRequests = async () => {
     try {

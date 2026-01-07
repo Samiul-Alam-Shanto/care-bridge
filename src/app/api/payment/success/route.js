@@ -21,7 +21,6 @@ export async function POST(request) {
     const db = client.db("care-bridge");
 
     // 1. FIRST CHECK: Does booking already exist?
-    // If yes, return success immediately (Handle page refresh/double firing)
     const existingBooking = await db
       .collection("bookings")
       .findOne({ paymentId: paymentIntentId });
@@ -34,7 +33,7 @@ export async function POST(request) {
       });
     }
 
-    // 2. If NOT exists, we MUST have bookingData to create it
+    // 2. If NOT exists, we MUST have bookingData
     if (!bookingData) {
       return NextResponse.json(
         { error: "Missing booking data" },
@@ -42,14 +41,20 @@ export async function POST(request) {
       );
     }
 
-    // 3. Verify Stripe Status
+    // 3. Verify Stripe Status & Get Real Amount
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+
     if (paymentIntent.status !== "succeeded") {
       return NextResponse.json(
         { error: "Payment not successful" },
         { status: 400 }
       );
     }
+
+    // --- SECURE CHANGE START ---
+    // Get actual amount paid from Stripe (in cents), convert to standard currency
+    const amountPaid = paymentIntent.amount / 100;
+    // --- SECURE CHANGE END ---
 
     // 4. Create New Booking
     const newBooking = {
@@ -67,7 +72,9 @@ export async function POST(request) {
       startDate: new Date(bookingData.startDate),
       endDate: new Date(bookingData.endDate),
       totalDays: bookingData.totalDays,
-      totalCost: bookingData.totalCost,
+
+      // SECURE CHANGE: Use amount from Stripe, not localStorage
+      totalCost: amountPaid,
 
       // Operational State
       status: "pending_approval",
@@ -79,7 +86,7 @@ export async function POST(request) {
         {
           stage: "paid",
           timestamp: new Date(),
-          message: "Payment received via Stripe",
+          message: `Payment of ${amountPaid} received via Stripe`,
         },
         {
           stage: "pending_approval",

@@ -40,13 +40,6 @@ export default function CareersPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 1. Auth Check
-    if (!session) {
-      toast.error("Please login to apply");
-      router.push("/login?callbackUrl=/careers");
-      return;
-    }
-
     setLoading(true);
 
     try {

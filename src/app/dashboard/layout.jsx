@@ -2,14 +2,9 @@ import Sidebar from "@/components/dashboard/Sidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
-import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({ children }) {
   const session = await getServerSession(authOptions);
-
-  if (!session) {
-    redirect("/login");
-  }
 
   // Fallback to "user" if role is missing
   const role = session.user.role || "user";
