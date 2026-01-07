@@ -63,44 +63,46 @@ export default function AdminBookingsPage() {
       </h1>
 
       <div className="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
-        <table className="w-full text-sm text-left">
-          <thead className="bg-stone-50 dark:bg-stone-900 border-b border-border text-muted-foreground uppercase text-xs">
-            <tr>
-              <th className="px-6 py-4">Service</th>
-              <th className="px-6 py-4">Current Provider</th>
-              <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {bookings.map((booking) => (
-              <tr
-                key={booking._id}
-                className="hover:bg-stone-50/50 dark:hover:bg-stone-900/50"
-              >
-                <td className="px-6 py-4 font-medium">
-                  {booking.serviceTitle}
-                </td>
-                <td className="px-6 py-4 text-primary">
-                  {booking.caregiverName}
-                </td>
-                <td className="px-6 py-4">
-                  <span className="px-2 py-1 bg-stone-100 text-stone-700 rounded text-xs uppercase font-bold">
-                    {booking.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <button
-                    onClick={() => setSelectedBooking(booking)}
-                    className="flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline"
-                  >
-                    <RefreshCw className="h-3 w-3" /> Reassign
-                  </button>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-stone-50 dark:bg-stone-900 border-b border-border text-muted-foreground uppercase text-xs">
+              <tr>
+                <th className="px-6 py-4">Service</th>
+                <th className="px-6 py-4">Current Provider</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {bookings.map((booking) => (
+                <tr
+                  key={booking._id}
+                  className="hover:bg-stone-50/50 dark:hover:bg-stone-900/50"
+                >
+                  <td className="px-6 py-4 font-medium">
+                    {booking.serviceTitle}
+                  </td>
+                  <td className="px-6 py-4 text-primary">
+                    {booking.caregiverName}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="px-2 py-1 bg-stone-100 text-stone-700 rounded text-xs uppercase font-bold">
+                      {booking.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => setSelectedBooking(booking)}
+                      className="flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline"
+                    >
+                      <RefreshCw className="h-3 w-3" /> Reassign
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* REASSIGN MODAL */}

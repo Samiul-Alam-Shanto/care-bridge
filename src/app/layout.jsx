@@ -23,7 +23,6 @@ export default function RootLayout({ children }) {
 
         <AppProviders>
           <div className="flex min-h-screen flex-col">
-            {/* The Shell handles the Navbar/Footer logic */}
             <ClientShell>
               <main className="flex-1">{children}</main>
             </ClientShell>

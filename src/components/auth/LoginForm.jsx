@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-// CHANGE: Import from next-auth/react
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
 import { FcGoogle } from "react-icons/fc";
+import DemoCredentials from "../DemoCredentials";
 export default function LoginForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -20,6 +20,7 @@ export default function LoginForm() {
 
   const onSubmit = async (data) => {
     setLoading(true);
+    const toastId = toast.loading("Verifying credentials...");
     try {
       const result = await signIn("credentials", {
         redirect: false,
@@ -28,15 +29,19 @@ export default function LoginForm() {
       });
 
       if (result?.error) {
-        throw new Error("Invalid Email or Password");
+        // Dismiss loading and show error
+        toast.error("Invalid Email or Password", { id: toastId });
+        setLoading(false);
+        return;
       }
-
+      toast.dismiss(toastId);
       // Login Successful
       toast.success("Welcome back!");
-      router.push("/dashboard");
+
       router.refresh();
+      router.push("/dashboard");
     } catch (error) {
-      toast.error(error.message);
+      toast.error("An unexpected error occurred", { id: toastId });
     } finally {
       setLoading(false);
     }
@@ -49,8 +54,6 @@ export default function LoginForm() {
 
   return (
     <div className="w-full max-w-md space-y-6 rounded-2xl bg-card p-8 shadow-xl border border-border">
-      <Toaster position="top-center" />
-
       <div className="text-center">
         <h2 className="text-3xl font-bold text-primary tracking-tight">
           Welcome Back
@@ -59,6 +62,7 @@ export default function LoginForm() {
           Sign in to manage your care
         </p>
       </div>
+      <DemoCredentials />
 
       <button
         onClick={handleGoogleLogin}

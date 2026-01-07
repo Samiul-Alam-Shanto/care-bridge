@@ -1,13 +1,15 @@
 "use client";
 import Link from "next/link";
 import { ArrowRight, MapPin } from "lucide-react";
+import Image from "next/image";
 
 export default function CoveragePreview() {
   return (
     <section className="relative overflow-hidden bg-emerald-950 py-24 text-center">
       {/* Background Image Overlay */}
       <div className="absolute inset-0 opacity-20">
-        <img
+        <Image
+          fill
           src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=2000"
           alt="Map Background"
           className="h-full w-full object-cover grayscale"

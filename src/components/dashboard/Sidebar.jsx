@@ -13,6 +13,7 @@ import {
   Users,
   ShieldAlert,
   BarChart3,
+  Wallet,
 } from "lucide-react";
 
 // 1. EXPORT THIS CONSTANT
@@ -27,6 +28,7 @@ export const menus = {
   caregiver: [
     { name: "Work Console", href: "/dashboard", icon: CheckSquare },
     { name: "Job Requests", href: "/dashboard/requests", icon: ClipboardList },
+    { name: "My Wallet", href: "/dashboard/wallet", icon: Wallet },
     { name: "History", href: "/dashboard/history", icon: CalendarDays },
     { name: "Settings", href: "/dashboard/profile", icon: Settings },
   ],

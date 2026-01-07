@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { ShieldCheck, UserCheck, FileText, BadgeCheck } from "lucide-react";
+import Image from "next/image";
 
 const features = [
   {
@@ -79,7 +80,8 @@ export default function SafetyShowcase() {
           >
             {/* Main Image */}
             <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl border border-border">
-              <img
+              <Image
+                fill
                 src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=1000"
                 alt="Verified Caregiver"
                 className="w-full h-auto object-cover"

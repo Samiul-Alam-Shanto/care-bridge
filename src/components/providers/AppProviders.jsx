@@ -16,10 +16,7 @@ export default function AppProviders({ children }) {
         <ThemeProvider>
           <CartProvider>
             <WishlistProvider>
-              <Toaster
-                position="top-center"
-                toastOptions={{ duration: 3000 }}
-              />
+              <Toaster position="top-center" />
               {children}
             </WishlistProvider>
           </CartProvider>

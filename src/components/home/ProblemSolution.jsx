@@ -49,8 +49,9 @@ export default function ProblemSolution() {
             transition={{ duration: 0.8 }}
             className="relative"
           >
-            <div className="relative h-[500px] w-full overflow-hidden rounded-3xl shadow-2xl">
-              <img
+            <div className="relative h-125 w-full overflow-hidden rounded-3xl shadow-2xl">
+              <Image
+                fill
                 src="https://images.unsplash.com/photo-1511895426328-dc8714191300?q=80&w=2000"
                 alt="Happy family"
                 className="h-full w-full object-cover"

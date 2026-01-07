@@ -22,12 +22,6 @@ export default function CheckoutPage() {
 
   // 1. Check Auth & Load Data
   useEffect(() => {
-    if (status === "unauthenticated") {
-      // Redirect to login, then come back here
-      router.push("/login?callbackUrl=/checkout");
-      return;
-    }
-
     if (status === "authenticated") {
       const data = localStorage.getItem("carebridge_checkout_item");
       if (!data) {

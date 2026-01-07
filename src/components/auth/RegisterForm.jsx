@@ -5,8 +5,9 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { uploadToImgBB } from "@/lib/upload";
+import { axiosPublic } from "@/lib/axios"; // Use Axios
+import { signIn } from "next-auth/react"; // IMPORT SIGN IN
 import toast, { Toaster } from "react-hot-toast";
-import { axiosPublic } from "@/lib/axios";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -20,17 +21,16 @@ export default function RegisterForm() {
 
   const onSubmit = async (data) => {
     setLoading(true);
+    const toastId = toast.loading("Creating account...");
+
     try {
-      // 1. Image Upload
+      // 1. Upload Image
       const file = data.image[0];
       if (!file) throw new Error("Please upload a profile picture");
-
-      toast.loading("Uploading image...", { id: "upload" });
       const imageUrl = await uploadToImgBB(file);
-      toast.dismiss("upload");
 
-      // 2. API Call
-      const { data: result } = await axiosPublic.post("/auth/register", {
+      // 2. Register User in DB
+      await axiosPublic.post("/auth/register", {
         name: data.name,
         email: data.email,
         phone: data.phone,
@@ -39,14 +39,37 @@ export default function RegisterForm() {
         image: imageUrl,
       });
 
-      // 3. Success
-      toast.success("Account created successfully!");
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 1500);
+      // 3. AUTO-LOGIN (The Fix)
+      toast.loading("Logging you in...", { id: toastId });
+
+      const loginResult = await signIn("credentials", {
+        redirect: false, // Don't redirect automatically, let us handle it
+        email: data.email,
+        password: data.password,
+      });
+
+      if (loginResult?.error) {
+        throw new Error(
+          "Account created, but auto-login failed. Please sign in manually."
+        );
+      }
+
+      // 4. Success & Redirect
+      toast.success("Welcome to CareBridge!", { id: toastId });
+      router.refresh(); // Ensure session cookies are set
+      router.push("/dashboard");
     } catch (error) {
       console.error(error);
-      toast.error(error.message);
+      const msg =
+        error.response?.data?.error || error.message || "Registration failed";
+
+      // If the error was specifically "Auto-login failed", redirect to login
+      if (msg.includes("auto-login failed")) {
+        toast.error(msg, { id: toastId });
+        setTimeout(() => router.push("/login"), 2000);
+      } else {
+        toast.error(msg, { id: toastId });
+      }
     } finally {
       setLoading(false);
     }
@@ -111,10 +134,10 @@ export default function RegisterForm() {
           </label>
           <input
             {...register("phone", {
-              required: "Phone number is required",
+              required: "Phone is required",
               pattern: {
                 value: /^(\+880|01)[0-9]{9}$/,
-                message: "Valid BD number required (+880 or 01...)",
+                message: "Valid BD number required",
               },
             })}
             type="tel"
@@ -134,10 +157,7 @@ export default function RegisterForm() {
           <input
             {...register("nid", {
               required: "NID is required",
-              minLength: {
-                value: 10,
-                message: "NID usually has at least 10 digits",
-              },
+              minLength: { value: 10, message: "Min 10 digits" },
             })}
             type="number"
             className="w-full rounded-lg border border-input bg-background px-4 py-2 focus:ring-2 focus:ring-primary outline-none transition-all"
@@ -148,7 +168,7 @@ export default function RegisterForm() {
           )}
         </div>
 
-        {/* Image Upload */}
+        {/* Image */}
         <div className="space-y-1">
           <label className="text-sm font-medium text-foreground">
             Profile Picture
@@ -157,7 +177,7 @@ export default function RegisterForm() {
             {...register("image", { required: "Profile picture required" })}
             type="file"
             accept="image/*"
-            className="w-full cursor-pointer rounded-lg border border-dashed border-input bg-background px-4 py-2 text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+            className="w-full cursor-pointer rounded-lg border border-dashed border-input bg-background px-4 py-2 text-sm text-muted-foreground"
           />
           {errors.image && (
             <p className="text-xs text-red-500">{errors.image.message}</p>
@@ -175,7 +195,7 @@ export default function RegisterForm() {
               minLength: { value: 6, message: "Min 6 chars" },
               pattern: {
                 value: /^(?=.*[a-z])(?=.*[A-Z])/,
-                message: "Must contain 1 uppercase & 1 lowercase letter",
+                message: "1 Upper & 1 Lower case",
               },
             })}
             type="password"
@@ -187,24 +207,15 @@ export default function RegisterForm() {
           )}
         </div>
 
-        {/* Submit Button */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-primary py-3 text-primary-foreground font-semibold shadow-md hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          className="w-full rounded-lg bg-primary py-3 text-white font-semibold shadow-md hover:bg-emerald-700 disabled:opacity-50 transition-all"
         >
-          {loading ? (
-            <span className="flex items-center justify-center gap-2">
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
-              Processing...
-            </span>
-          ) : (
-            "Register"
-          )}
+          {loading ? "Creating Account..." : "Register"}
         </button>
       </form>
 
-      {/* Login Link */}
       <div className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
         <Link

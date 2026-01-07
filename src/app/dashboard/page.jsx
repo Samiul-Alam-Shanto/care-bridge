@@ -10,7 +10,7 @@ export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
 
-  console.log(role);
+  // console.log(role);
   if (role === "caregiver") return <CaregiverOverview />;
   if (role === "admin") return <AdminOverview />; // Use it here
 

@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { axiosSecure } from "@/lib/axios"; // Secure Axios for user data
 import toast from "react-hot-toast";
 
 const CartContext = createContext();
@@ -21,22 +22,17 @@ export function CartProvider({ children }) {
       // AUTH MODE: Fetch from DB + Sync Local
       if (status === "authenticated") {
         try {
-          // Fetch DB Cart
-          const res = await fetch("/api/user/cart");
-          const dbData = await res.json();
-          const dbCart = dbData.items || [];
+          // Fetch DB Cart using Axios
+          const { data } = await axiosSecure.get("/user/cart");
+          const dbCart = data.items || [];
 
           // If we have local items, merge them to DB (One-time sync)
           if (localCart.length > 0) {
-            // Simple merge: DB items + Local items (filtering duplicates logic can be added here)
-            // For now, we just concat
+            // Simple merge: DB items + Local items
             const mergedCart = [...dbCart, ...localCart];
 
-            // Save merged to DB
-            await fetch("/api/user/cart", {
-              method: "POST",
-              body: JSON.stringify({ items: mergedCart }),
-            });
+            // Save merged to DB using Axios
+            await axiosSecure.post("/user/cart", { items: mergedCart });
 
             setCart(mergedCart);
             localStorage.removeItem("carebridge_cart"); // Clear local after sync
@@ -63,10 +59,11 @@ export function CartProvider({ children }) {
   const saveCartState = async (newCart) => {
     setCart(newCart);
     if (status === "authenticated") {
-      await fetch("/api/user/cart", {
-        method: "POST",
-        body: JSON.stringify({ items: newCart }),
-      });
+      try {
+        await axiosSecure.post("/user/cart", { items: newCart });
+      } catch (error) {
+        console.error("Failed to save cart to DB", error);
+      }
     } else {
       localStorage.setItem("carebridge_cart", JSON.stringify(newCart));
     }

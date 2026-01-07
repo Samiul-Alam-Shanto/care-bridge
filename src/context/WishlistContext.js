@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { axiosSecure } from "@/lib/axios"; // Secure Axios
 import toast from "react-hot-toast";
 
 const WishlistContext = createContext();
@@ -14,11 +15,10 @@ export function WishlistProvider({ children }) {
     const loadWishlist = async () => {
       if (status === "authenticated") {
         try {
-          const res = await fetch("/api/user/wishlist");
-          const data = await res.json();
+          const { data } = await axiosSecure.get("/user/wishlist");
           setWishlist(data.favorites || []);
         } catch (e) {
-          console.error(e);
+          console.error("Failed to load wishlist", e);
         }
       } else {
         const local = JSON.parse(
@@ -48,10 +48,12 @@ export function WishlistProvider({ children }) {
 
     // Persist
     if (status === "authenticated") {
-      await fetch("/api/user/wishlist", {
-        method: "POST",
-        body: JSON.stringify({ caregiverId }),
-      });
+      try {
+        await axiosSecure.post("/user/wishlist", { caregiverId });
+      } catch (err) {
+        console.error("Failed to sync wishlist", err);
+        setWishlist(wishlist); // Rollback on error
+      }
     } else {
       localStorage.setItem("carebridge_wishlist", JSON.stringify(newWishlist));
     }

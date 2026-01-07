@@ -55,12 +55,12 @@ export default function Testimonials() {
             1024: { slidesPerView: 3 },
           }}
           autoplay={{ delay: 4000 }}
-          pagination={{ clickable: true }}
+          // pagination={{ clickable: true }}
           className="pb-16"
         >
           {reviews.map((review) => (
             <SwiperSlide key={review.id}>
-              <div className="relative h-full rounded-3xl bg-background p-8 shadow-sm border border-border transition-transform hover:-translate-y-1 hover:shadow-md">
+              <div className="relative h-75 rounded-3xl bg-background p-8 shadow-sm border border-border transition-transform hover:-translate-y-1 hover:shadow-md">
                 <Quote className="absolute top-8 right-8 h-8 w-8 text-primary/20" />
 
                 <div className="flex gap-1 mb-6">

@@ -31,7 +31,7 @@ export default function FaqAccordion() {
 
   return (
     <section className="py-24 bg-background">
-      <div className="container mx-auto px-4 md:px-8 max-w-6xl">
+      <div className="container mx-auto px-4 md:px-8 max-w-4xl">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-bold text-foreground">
             Frequently Asked Questions
