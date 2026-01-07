@@ -53,7 +53,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative mt-16 h-[80vh] min-h-150 w-full overflow-hidden bg-stone-900">
+    <section className="relative mt-16  h-screen min-h-150 w-full overflow-hidden bg-stone-900">
       {/* SLIDER BACKGROUND */}
       <div className="absolute inset-0 h-full w-full">
         <Swiper
@@ -115,13 +115,13 @@ export default function Hero() {
             </div>
 
             {/* Heading */}
-            <h1 className="text-5xl font-bold leading-tight text-white md:text-7xl">
+            <h1 className="text-4xl sm:text-5xl font-bold leading-tight text-white md:text-7xl">
               Care that feels <br /> like{" "}
               <span className="text-emerald-500">family.</span>
             </h1>
 
             {/* Subtitle */}
-            <p className="max-w-xl text-lg text-stone-300 leading-relaxed">
+            <p className="max-w-xl text-sm sm:text md:text-lg text-stone-300 leading-relaxed">
               Instantly book verified professionals for elderly care,
               babysitting, and patient support. Safe, reliable, and available
               24/7.
@@ -141,7 +141,7 @@ export default function Hero() {
                 onSubmit={handleSubmit}
               >
                 {/* Location Input */}
-                <div className="col-span-1 md:col-span-4 relative">
+                <div className="col-span-1 md:col-span-3 relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
                     <MapPin className="h-5 w-5 text-stone-400" />
                   </div>
@@ -155,7 +155,7 @@ export default function Hero() {
                 </div>
 
                 {/* Service Select */}
-                <div className="col-span-1 md:col-span-3 relative">
+                <div className="col-span-1 md:col-span-4 relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
                     <Search className="h-5 w-5 text-stone-400" />
                   </div>

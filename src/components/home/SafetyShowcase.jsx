@@ -81,7 +81,8 @@ export default function SafetyShowcase() {
             {/* Main Image */}
             <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl border border-border">
               <Image
-                fill
+                width={700}
+                height={500}
                 src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=1000"
                 alt="Verified Caregiver"
                 className="w-full h-auto object-cover"

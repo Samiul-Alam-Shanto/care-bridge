@@ -6,7 +6,7 @@ export const metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-background pt-24 pb-20">
+    <div className="min-h-screen flex justify-self-center items-center bg-background pt-24 pb-20">
       <div className="container mx-auto px-4 md:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Info Side */}

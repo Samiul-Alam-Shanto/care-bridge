@@ -107,7 +107,7 @@ export default function Navbar() {
         </Link>
 
         {/* DESKTOP NAVIGATION */}
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden xl:flex items-center gap-1">
           {navItems.map((item) => (
             <div
               key={item.name}
@@ -177,7 +177,7 @@ export default function Navbar() {
         </nav>
 
         {/* RIGHT SIDE ACTIONS */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden xl:flex items-center gap-4">
           {/* --- CART ICON (DESKTOP) --- */}
           <Link
             href="/cart"
@@ -276,7 +276,7 @@ export default function Navbar() {
         </div>
 
         {/* MOBILE MENU TOGGLE */}
-        <div className="flex items-center gap-4 md:hidden">
+        <div className="flex items-center gap-4 xl:hidden">
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground hover:bg-stone-100 hover:text-primary dark:hover:bg-stone-800 transition-colors"
@@ -310,7 +310,7 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden border-b border-border bg-background overflow-hidden"
+            className="xl:hidden border-b border-border bg-background overflow-hidden"
           >
             <div className="flex flex-col space-y-2 p-6">
               {navItems.map((item) => (

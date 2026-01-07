@@ -98,7 +98,7 @@ export default function CaregiverPicker({ caregivers, service }) {
 
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
                   <MapPin className="h-4 w-4" />
-                  {person.location.district}, {person.location.area}
+                  {person?.location?.district}, {person?.location?.area}
                 </div>
 
                 <p className="text-sm text-muted-foreground line-clamp-2 mb-4 h-10">

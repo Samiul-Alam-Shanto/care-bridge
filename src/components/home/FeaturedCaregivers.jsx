@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination } from "swiper/modules";
+import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
+import "swiper/css/navigation";
 import { Star, MapPin, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { axiosPublic } from "@/lib/axios";
@@ -23,34 +24,39 @@ export default function FeaturedCaregivers() {
   }, []);
 
   return (
-    <section className="py-12 md:py-24 bg-background">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header - Improved stacking on mobile */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 md:mb-12 gap-4">
+    <section className="py-20 md:py-32 bg-stone-50 dark:bg-background">
+      <div className="container mx-auto px-4 md:px-8">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
           <div className="max-w-2xl">
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
-              Top Rated Professionals
+            <span className="text-primary font-bold text-sm tracking-widest uppercase mb-2 block">
+              Our Experts
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3 leading-tight">
+              Meet our Top Rated Professionals
             </h2>
-            <p className="mt-2 text-sm md:text-base text-muted-foreground">
-              Highly recommended by families like yours.
+            <p className="text-muted-foreground text-lg">
+              Highly qualified, background-checked, and loved by families across
+              the country.
             </p>
           </div>
+
           <Link
             href="/caregivers"
-            className="group flex items-center gap-2 text-sm md:text-base font-semibold text-primary hover:underline"
+            className="hidden md:flex group items-center gap-2 font-bold text-primary hover:text-emerald-700 transition-colors bg-white dark:bg-stone-900 px-6 py-3 rounded-full border border-border hover:shadow-md"
           >
-            View all professionals
+            View All Experts{" "}
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
 
-        {/* Loading State - Responsive Grid matching Swiper logic */}
+        {/* Loading State Skeleton */}
         {loading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="h-[400px] rounded-2xl bg-stone-100 dark:bg-stone-800 animate-pulse"
+                className="h-100 rounded-3xl bg-stone-200 dark:bg-stone-800 animate-pulse"
               />
             ))}
           </div>
@@ -58,114 +64,112 @@ export default function FeaturedCaregivers() {
 
         {/* Carousel */}
         {!loading && (
-          <Swiper
-            modules={[Autoplay, Pagination]}
-            spaceBetween={20} // Tighter spacing for mobile
-            slidesPerView={1.2} // Show a peek of the next card on mobile
-            centeredSlides={false}
-            breakpoints={{
-              // Mobile / Tablet Portrait
-              640: {
-                slidesPerView: 2,
-                spaceBetween: 24,
-              },
-              // Tablet Landscape
-              768: {
-                slidesPerView: 2.5,
-                spaceBetween: 24,
-              },
-              // Desktop
-              1024: {
-                slidesPerView: 4,
-                spaceBetween: 30,
-              },
-            }}
-            autoplay={{
-              delay: 3500,
-              disableOnInteraction: false,
-            }}
-            pagination={{
-              clickable: true,
-              dynamicBullets: true, // Better for many slides on mobile
-            }}
-            className="pb-14 !overflow-visible md:!overflow-hidden" // Allow peek on mobile
-          >
-            {caregivers.map((person) => (
-              <SwiperSlide key={person._id} className="h-auto">
-                <Link
-                  href={`/caregivers/${person._id}`}
-                  className="group block h-full"
-                >
-                  <div className="relative flex flex-col h-full overflow-hidden rounded-2xl border border-border bg-card shadow-sm hover:shadow-xl transition-all duration-300">
-                    {/* Image Container */}
-                    <div className="relative h-56 sm:h-64 w-full bg-stone-200 shrink-0">
-                      <Image
-                        src={person.image || "/placeholder.jpg"}
-                        alt={person.name}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                      />
-                      <div className="absolute top-3 right-3 flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-xs font-bold text-stone-900 shadow-sm backdrop-blur">
-                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                        {person.rating}
+          <div className="relative">
+            <Swiper
+              modules={[Autoplay, Pagination, Navigation]}
+              spaceBetween={24}
+              slidesPerView={1}
+              breakpoints={{
+                640: { slidesPerView: 2 }, // Tablets
+                1024: { slidesPerView: 3 }, // Small Desktop
+                1280: { slidesPerView: 4 }, // Large Desktop
+              }}
+              autoplay={{ delay: 4000, disableOnInteraction: false }}
+              pagination={{ clickable: true, dynamicBullets: true }}
+              className="pb-16" // Allow shadows to overflow
+            >
+              {caregivers.map((person) => (
+                <SwiperSlide key={person._id}>
+                  <Link
+                    href={`/caregivers/${person._id}`}
+                    className="group block h-full"
+                  >
+                    <div className="relative flex flex-col h-full overflow-hidden rounded-3xl bg-card border border-border shadow-sm transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 hover:border-primary/30">
+                      {/* Image Container */}
+                      <div className="relative h-72 w-full bg-stone-200 overflow-hidden">
+                        <Image
+                          src={person.image || "/placeholder.jpg"}
+                          alt={person.name}
+                          fill
+                          className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+
+                        {/* Rating Badge */}
+                        <div className="absolute top-4 right-4 flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-xs font-bold text-stone-900 shadow-sm backdrop-blur-sm">
+                          <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                          {person.rating}
+                        </div>
+
+                        {/* Overlay Gradient (Only on hover) */}
+                        <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex flex-1 flex-col p-6">
+                        <div className="mb-4">
+                          <h3 className="text-xl font-bold text-foreground truncate">
+                            {person.name}
+                          </h3>
+
+                          {/* Skills Tags */}
+                          <div className="flex flex-wrap gap-2 mt-3">
+                            {person.skills?.slice(0, 2).map((skill) => (
+                              <span
+                                key={skill}
+                                className="inline-flex items-center rounded-md bg-stone-100 dark:bg-stone-800 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-stone-600 dark:text-stone-300"
+                              >
+                                {skill.replace("-", " ")}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="mt-auto space-y-4">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <MapPin className="h-4 w-4 shrink-0 text-primary" />
+                            <span className="truncate">
+                              {person.location?.district},{" "}
+                              {person.location?.area}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center justify-between border-t border-border pt-4">
+                            <div>
+                              <p className="text-xs text-muted-foreground font-medium uppercase">
+                                Starting at
+                              </p>
+                              <p className="font-bold text-lg text-primary">
+                                ৳{person.hourly_rate}
+                                <span className="text-sm font-normal text-muted-foreground">
+                                  /hr
+                                </span>
+                              </p>
+                            </div>
+
+                            <div className="h-10 w-10 rounded-full bg-stone-100 dark:bg-stone-800 flex items-center justify-center text-foreground transition-colors group-hover:bg-primary group-hover:text-white">
+                              <ArrowRight className="h-5 w-5" />
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
-
-                    {/* Details Container - Uses flex-grow to keep buttons aligned */}
-                    <div className="p-4 md:p-5 flex flex-col flex-grow">
-                      <h3 className="text-base md:text-lg font-bold text-foreground truncate">
-                        {person.name}
-                      </h3>
-
-                      <div className="flex flex-wrap gap-1.5 mt-2">
-                        {person.skills?.slice(0, 2).map((skill) => (
-                          <span
-                            key={skill}
-                            className="text-[9px] md:text-[10px] uppercase font-bold text-primary bg-primary/10 px-2 py-0.5 md:py-1 rounded"
-                          >
-                            {skill.replace("-", " ")}
-                          </span>
-                        ))}
-                      </div>
-
-                      <div className="flex items-center gap-2 text-[11px] md:text-xs text-muted-foreground mt-4">
-                        <MapPin className="h-3 w-3 shrink-0" />
-                        <span className="truncate">
-                          {person.location?.district}, {person.location?.area}
-                        </span>
-                      </div>
-
-                      {/* Spacer to push price to bottom */}
-                      <div className="mt-auto pt-4 border-t border-border flex justify-between items-center">
-                        <span className="font-bold text-sm md:text-base text-foreground">
-                          ৳{person.hourly_rate}
-                          <span className="text-[10px] md:text-xs font-normal text-muted-foreground">
-                            /hr
-                          </span>
-                        </span>
-                        <span className="text-[11px] md:text-xs font-bold text-stone-500 group-hover:text-primary transition-colors flex items-center gap-1">
-                          Profile <ArrowRight className="h-3 w-3" />
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              </SwiperSlide>
-            ))}
-          </Swiper>
+                  </Link>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
         )}
-      </div>
 
-      {/* Custom Styles for Swiper Pagination Dots */}
-      <style jsx global>{`
-        .swiper-pagination-bullet-active {
-          background: hsl(var(--primary)) !important;
-        }
-        .swiper-pagination {
-          bottom: 0px !important;
-        }
-      `}</style>
+        {/* Mobile View All Button */}
+        <div className="mt-8 text-center md:hidden">
+          <Link
+            href="/caregivers"
+            className="inline-flex items-center justify-center gap-2 w-full font-bold text-primary bg-white dark:bg-stone-900 px-6 py-4 rounded-xl border border-border shadow-sm"
+          >
+            View All Experts <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </div>
     </section>
   );
 }

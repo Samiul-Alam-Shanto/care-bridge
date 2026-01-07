@@ -5,16 +5,49 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 
 // Dynamic SEO Metadata
-export async function generateMetadata(props) {
-  // NEXT.JS 16 FIX: Await params first
-  const params = await props.params;
+// Dynamic SEO Metadata (Production Ready)
+export async function generateMetadata({ params }) {
   const service = await getServiceBySlug(params.slug);
 
-  if (!service) return { title: "Service Not Found" };
+  if (!service) {
+    return {
+      title: "Service Not Found | CareBridge",
+      description: "The requested healthcare service does not exist.",
+    };
+  }
+
+  const url = `https://care-bridge-seven.vercel.app/services/${service.slug}`;
 
   return {
     title: `${service.title} | CareBridge`,
     description: service.description,
+
+    openGraph: {
+      title: `${service.title} | CareBridge`,
+      description: service.description,
+      url,
+      siteName: "CareBridge",
+      images: [
+        {
+          url: service.image,
+          width: 1200,
+          height: 630,
+          alt: service.title,
+        },
+      ],
+      type: "article",
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title: `${service.title} | CareBridge`,
+      description: service.description,
+      images: [service.image],
+    },
+
+    alternates: {
+      canonical: url,
+    },
   };
 }
 

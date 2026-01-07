@@ -17,10 +17,10 @@ export default function TrustBar() {
               key={index}
               className="flex flex-col items-center justify-center gap-3 md:flex-row md:justify-start"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <div className="flex h-12 w-12 text-center items-center justify-center rounded-full bg-primary/10 text-primary">
                 <item.icon className="h-6 w-6" />
               </div>
-              <span className="text-sm font-semibold text-foreground md:text-base">
+              <span className="text-sm  font-semibold  md:text-base">
                 {item.text}
               </span>
             </div>
